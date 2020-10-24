@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script>
+		const gameName = "Hearthstone";
+		const clientId = "ep7xa6f2odbmnyzferlm6s840jeham";
+		const clientSecret = "l2c9b794ere5zyyqci6pfcehl29fgc";
+		const maxStreams = 30;
+		const dropsTag = "c2542d6d-cd10-4532-919b-3d19f30a768b";
+	</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://embed.twitch.tv/embed/v1.js"></script>
+
+	<style>
+		#streams {
+			display: flex;
+			flex-wrap: wrap;
+			padding: 0;
+		}
+
+		.stream {
+			flex: 1;
+			margin: 0;
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="streams"></div>
+
+	<script>
+		function removeStream(name) {
+			$('#' + name).remove();
+		}
+
+		function playstream(channel) {
+			$('#streams').append('<div class="stream" id="' + channel + '">'
+				+
+				'<iframe src="https://player.twitch.tv/?channel='+channel+'&html5&parent=localhost&muted=true" height="300" width="300" frameborder="0" scrolling="no" allowfullscreen="true"></iframe>'
+				+'</div>');
+		}
+
+		function getGame() {
+			var credentials = getTwitchAccessToken(clientId, clientSecret);
+
+			credentials.then((credentials) => {
+				var game = findGame(gameName, credentials.access_token);
+
+				game.then((game) => {
+					console.log(`Finding Streams for Game ${game.data[0].id}`);
+					
+					var streams = getStreams(game.data[0].id, maxStreams, credentials.access_token);
+
+					streams.then((streams) => {
+						console.log(`Found ${streams.data.length} streams to use`);
+
+						$.each(streams.data, function (i, item) {
+							let name = item.user_name;
+							let isLive = item.type === 'live';
+							let shouldAdd = !$('#' + name).length;
+
+							if (isLive && shouldAdd) {
+								playstream(name);
+							}
+						});
+
+						var streamsFromTwitch = streams.data.map(function (item) {
+							return item['user_name'];
+						});
+
+						var activeStreams = $(".stream").map(function () {
+							return this.id;
+						}).toArray();
+
+						$.each(activeStreams, function (i, item) {
+							if (streamsFromTwitch.indexOf(item) === 0) {
+								removeStream(item);
+							}
+						});
+					});
+				});
+			});
+		}
+
+		function getTwitchAccessToken(clientId, clientSecret) {
+			return fetch(
+					`https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: null
+					})
+				.then((res) => res.json())
+				.then((res) => {
+					console.log(res);
+					return res;
+				})
+				.catch(error => console.log(error));
+		};
+
+		function findGame(gameName, token) {
+			return fetch(`https://api.twitch.tv/helix/games?name=${gameName}`, {
+					method: 'GET',
+					headers: {
+						'Client-ID': clientId,
+						'Authorization': `Bearer ${token}`
+					}
+				})
+				.then((res) => res.json())
+				.then((res) => {
+					console.log(res);
+					return res;
+				})
+				.catch(error => console.log(error));
+		}
+
+		function getStreams(gameId, maxStreams, token) {
+			return fetch(`https://api.twitch.tv/helix/streams?game_id=${gameId}&first=${maxStreams}&tl=${dropsTag}`, {
+					method: 'GET',
+					headers: {
+						'Client-ID': clientId,
+						'Authorization': `Bearer ${token}`
+					}
+				})
+				.then((res) => res.json())
+				.then((res) => {
+					console.log(res);
+					return res;
+				})
+				.catch(error => console.log(error));
+		}
+
+		$(document).ready(function () {
+			getGame();
+
+			setInterval(function () {
+				getGame();
+			}, 60000);
+		});
+	</script>
+</body>
+
+</html>
