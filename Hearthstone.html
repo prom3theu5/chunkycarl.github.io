@@ -40,10 +40,15 @@
 		}
 
 		function playstream(channel) {
-			$('#streams').append('<div class="stream" id="' + channel + '">'
-				+
-				'<iframe src="https://player.twitch.tv/?channel='+channel+'&html5&parent=prom3theu5.github.io&muted=true" height="300" width="300" frameborder="0" scrolling="no" allowfullscreen="true"></iframe>'
-				+'</div>');
+			$('#streams').append('<div class="stream" id="' + channel + '"></div>');
+
+			let embed = new Twitch.Embed(channel, {
+				channel: channel,
+				theme: "dark",
+				height: 300,
+				width: 300,
+				parent: ["prom3theu5.github.io"]
+			});
 		}
 
 		function getGame() {
