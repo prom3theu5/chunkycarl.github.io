@@ -98,7 +98,6 @@
 
 				const data = await res.json();
 				response = data;
-				console.log(data);
 				cursor = data.pagination.cursor;
 				data.data.forEach(stream => {
 					if (foundStreams.length < maxStreams) {
