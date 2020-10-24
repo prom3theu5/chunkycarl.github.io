@@ -3,13 +3,13 @@
 
 <head>
 	<script>
-		const gameName = "Hearthstone";
+		let params = new URLSearchParams(location.search);
 		const clientId = "ep7xa6f2odbmnyzferlm6s840jeham";
 		const clientSecret = "l2c9b794ere5zyyqci6pfcehl29fgc";
 		const dropsTag = "c2542d6d-cd10-4532-919b-3d19f30a768b";
-		
-		let params = new URLSearchParams(location.search);
+				
 		const maxStreams = params.get('max') ?? 30;
+		const gameName = params.get('game') ?? "Hearthstone";
 	</script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://embed.twitch.tv/embed/v1.js"></script>
