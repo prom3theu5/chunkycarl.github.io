@@ -2,6 +2,11 @@
 <html>
 
 <head>
+	<style>
+		#streams { display: flex; flex-wrap: wrap; padding: 0; }
+		.stream { flex: 1; margin: 0; }
+		body { margin: 0; padding: 0; }
+	</style>
 	<script>
 		let params = new URLSearchParams(location.search);
 		const clientId = "ep7xa6f2odbmnyzferlm6s840jeham";
@@ -13,24 +18,6 @@
 	</script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://embed.twitch.tv/embed/v1.js"></script>
-
-	<style>
-		#streams {
-			display: flex;
-			flex-wrap: wrap;
-			padding: 0;
-		}
-
-		.stream {
-			flex: 1;
-			margin: 0;
-		}
-
-		body {
-			margin: 0;
-			padding: 0;
-		}
-	</style>
 </head>
 
 <body>
